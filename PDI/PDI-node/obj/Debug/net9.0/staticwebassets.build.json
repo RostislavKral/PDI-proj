@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "oC60oJq93f7xew8zFBVkAoZUkkcrplvTtKQ0Cntcc90=",
+  "Source": "PDI-node",
+  "BasePath": "_content/PDI-node",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
