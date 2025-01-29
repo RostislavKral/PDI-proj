@@ -1,0 +1,68 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbit-server
+    hostname: rmq
+    ports:
+      - "8080:15672"
+      - "5672:5672"    
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - pdi-network 
+    restart: unless-stopped
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - RabbitMQUsername=guest
+      - RabbitMQPassword=guest
+      - RabbitMQUri=172.17.0.1
+      - RabbitMQVirtualHost=/  
+      - FRONTEND_URL=http://frontend:3000  
+      - HOST=http://0.0.0.0:8081  
+    depends_on:
+      - frontend
+      - pdi-node
+      - rabbitmq
+    networks:
+      - pdi-network
+    ports:
+      - "8081:8081"  
+
+  frontend:
+    build:
+      context: PDI-front/pdi-front
+      dockerfile: Dockerfile
+      args:
+        - API_URL=http://localhost:8081  # Set the backend URL
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8081
+    networks:
+      - pdi-network
+    ports:
+      - "3000:3000"
+  pdi-node:
+    image: pdi-node  
+    build:
+      context: ../PDI-node  
+      dockerfile: Dockerfile 
+    environment:
+      - RabbitMQUsername=guest
+      - RabbitMQPassword=guest
+      - RabbitMQUri=172.17.0.1 
+      - RabbitMQVirtualHost=/
+    networks:
+      - pdi-network
+    depends_on:
+      - rabbitmq
+    deploy:
+      replicas: 3  # Number of replicas
+      restart_policy:
+        condition: on-failure  # Restart the containers on failure
+
+networks:
+  pdi-network:
+    driver: bridge

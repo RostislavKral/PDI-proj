@@ -1,0 +1,8 @@
+@PDI_HostAddress = http://localhost:5079
+
+GET {{PDI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+GET {{PDI_HostAddress}}
+Accept: application/json
